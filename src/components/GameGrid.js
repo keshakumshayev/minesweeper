@@ -5,16 +5,18 @@ export class GameGrid extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      rows: 5,
       columns: 5,
+      rows: 5,
       board: []
     }
   }
 
   componentWillMount() {
     this.setState({
-      board: this.generateEmptyBoard()
+        board: this.generateEmptyBoard(),
+        board: this.setBombs()
     })
+    // this.setBombs()
   }
 
   generateEmptyBoard() {
@@ -29,8 +31,23 @@ export class GameGrid extends Component {
     return emptyBoard
   }
 
+  setBombs() {
+    this.selectBombCell()
+  }
+
+  selectBombCell(){
+    this.setState({
+      board: this.state.board[1][1].generateBomb()
+    })
+  }
+
+
+  // Math.floor(Math.random()*this.state.columns)
+  // Math.floor(Math.random()*this.state.rows)
+
   handleClick(row, column) {
       console.log(this.state.board[row][column]);
+      console.log(this.state.board[row][column].state.hasBomb);
   }
 
   render() {
@@ -39,10 +56,14 @@ export class GameGrid extends Component {
         {
           this.state.board.map(
             (row, rowNumber) => {
-              return <div>{
+              return <div className="row">{
                 this.state.board[rowNumber].map(
                   (cell, colNumber) => {
-                    return <div onClick={() => this.handleClick(rowNumber,colNumber)} data-cell-id={rowNumber*this.state.columns+colNumber} className="square">{cell.empty}</div>;
+                    return <div
+                      onClick={() => this.handleClick(rowNumber,colNumber)}
+                      data-cell-id={rowNumber*this.state.columns+colNumber+1}
+                      className="square">{cell.state.empty}
+                      </div>;
                   }
                 )
               }</div>;

@@ -7,9 +7,15 @@ export class Cell extends Component {
       revealed: false,
       empty: "",
       // adjacentBombs: 0,
-      // hasBomb: false,
+      hasBomb: false,
       // flagged: false
     }
+  }
+
+  generateBomb(){
+    this.setState({
+      hasBomb: true
+    })
   }
 
   // render() {
