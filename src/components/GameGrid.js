@@ -7,47 +7,52 @@ export class GameGrid extends Component {
     this.state = {
       columns: 5,
       rows: 5,
-      board: []
+      board: [],
+      bombs: [],
     }
   }
 
   componentWillMount() {
     this.setState({
-        board: this.generateEmptyBoard(),
-        board: this.setBombs()
+      board: this.generateGameBoard(),
     })
-    // this.setBombs()
   }
 
-  generateEmptyBoard() {
-    var emptyBoard = [];
+  generateGameBoard(bombs = this.generateBombPositions()) {
+    var board = [];
+    this.setState({
+      bombs: bombs
+    })
     for (var row = 1; row <= this.state.rows; row++) {
-      emptyBoard.push([]);
+      board.push([]);
       for (var column = 1; column <= this.state.columns; column++) {
-        emptyBoard[row-1].push(new Cell({ row: row, column: column }));
+        var currentCell = this.currentCellNumber(row, column)
+        board[row-1].push(new Cell({
+                                    row: row,
+                                    column: column,
+                                    hasBomb: (bombs.indexOf(currentCell) > -1),
+                                    id: currentCell
+                                  }));
+
       }
     }
-    console.log(emptyBoard);
-    return emptyBoard
+    console.log(board);
+    return board
   }
 
-  setBombs() {
-    this.selectBombCell()
+  generateBombPositions() {
+    var bombArray = []
+    while(bombArray.length < 8){
+      var randomnumber = Math.floor(Math.random()*(this.state.rows*this.state.columns)) + 1;
+      if(bombArray.indexOf(randomnumber) > -1) continue;
+      bombArray[bombArray.length] = randomnumber;
+    }
+    console.log(bombArray);
+    return bombArray;
   }
 
-  selectBombCell(){
-    this.setState({
-      board: this.state.board[1][1].generateBomb()
-    })
-  }
-
-
-  // Math.floor(Math.random()*this.state.columns)
-  // Math.floor(Math.random()*this.state.rows)
-
-  handleClick(row, column) {
-      console.log(this.state.board[row][column]);
-      console.log(this.state.board[row][column].state.hasBomb);
+  currentCellNumber(row, column) {
+    return (row-1)*this.state.columns+column;
   }
 
   render() {
@@ -59,11 +64,7 @@ export class GameGrid extends Component {
               return <div className="row">{
                 this.state.board[rowNumber].map(
                   (cell, colNumber) => {
-                    return <div
-                      onClick={() => this.handleClick(rowNumber,colNumber)}
-                      data-cell-id={rowNumber*this.state.columns+colNumber+1}
-                      className="square">{cell.state.empty}
-                      </div>;
+                    return <Cell row={rowNumber+1} column={colNumber+1} hasBomb={this.state.bombs.indexOf(this.currentCellNumber(rowNumber+1, colNumber+1)) > -1} id={this.currentCellNumber(rowNumber+1, colNumber+1)}></Cell>;
                   }
                 )
               }</div>;
